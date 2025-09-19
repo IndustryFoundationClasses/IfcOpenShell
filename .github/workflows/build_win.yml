@@ -56,10 +56,10 @@ jobs:
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           SET IFCOS_INSTALL_PYTHON=FALSE
           cd win
-          echo y | call build-deps.cmd vs2022-x64 Release
+          echo y | call build-deps.cmd vs2022-x64 RelWithDebInfo
           SET PYTHONHOME=C:\Python\${{ matrix.python }}
           call run-cmake.bat vs2022-x64 -DENABLE_BUILD_OPTIMIZATIONS=On -DGLTF_SUPPORT=ON -DADD_COMMIT_SHA=ON -DVERSION_OVERRIDE=ON
-          call install-ifcopenshell.bat vs2022-x64 Release
+          call install-ifcopenshell.bat vs2022-x64 RelWithDebInfo
 
       - name: Pack Dependencies
         run: |
@@ -128,3 +128,12 @@ jobs:
               aws s3 cp "$($zip.FullName)" s3://ifcopenshell-builds/ --debug
               Start-Sleep -Seconds 5
           }
+
+      - name: Save debug symbols to releases
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: _installed-vs2022-x64/bin/_ifcopenshell_wrapper.pdb
+          asset_name: _ifcopenshell_wrapper.${{ matrix.python }}.pdb
+          release_name: _ifcopenshell_wrapper.pdb
+          overwrite: true
