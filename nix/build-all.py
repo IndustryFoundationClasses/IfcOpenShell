@@ -802,8 +802,9 @@ LDFLAGS = os.environ.get("LDFLAGS", "")
 ADDITIONAL_ARGS_STR = " ".join(ADDITIONAL_ARGS)
 
 if "wasm" in flags:
-    CFLAGS_MINIMAL = CXXFLAGS_MINIMAL = CFLAGS = CXXFLAGS = os.environ["SIDE_MODULE_CFLAGS"]
-    LDFLAGS = os.environ["SIDE_MODULE_LDFLAGS"]
+    # WASM `SIDE_MODULE_` are absorbed by `emcmake` automatically.
+    CFLAGS_MINIMAL = CXXFLAGS_MINIMAL = CFLAGS = CXXFLAGS = ""
+    LDFLAGS = ""
 elif sp.call([bash, "-c", "ld --gc-sections 2>&1 | grep -- --gc-sections &> /dev/null"]) != 0:
     CXXFLAGS_MINIMAL = f"{CXXFLAGS} {PIC} {ADDITIONAL_ARGS_STR}"
     CFLAGS_MINIMAL = f"{CFLAGS} {PIC} {ADDITIONAL_ARGS_STR}"
